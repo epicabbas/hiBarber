@@ -1,3 +1,3 @@
-# Welcome to HiBarber application 👋
+# Welcome to the hiBarber application 👋
 
-This is a mobile application project designed to help users find haircuts by showing four different hairstyles on their faces.
+This mobile application project is designed to help users find haircuts by showing four different hairstyles on their faces.
