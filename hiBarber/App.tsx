@@ -1,18 +1,17 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 import CameraScreen from './screens/CameraScreen';
+import PhotoPreviewScreen from './screens/PhotoPreviewScreen';
 
+const Stack = createStackNavigator();
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <CameraScreen />
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Camera">
+        <Stack.Screen name="Camera" component={CameraScreen} />
+        <Stack.Screen name="PhotoPreview" component={PhotoPreviewScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1
-  }
-});

@@ -1,12 +1,13 @@
-import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
-import { useState } from 'react';
+import { CameraView, Camera, CameraType, useCameraPermissions } from 'expo-camera';
+import { useState, useRef } from 'react';
 import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
-import { captureRef } from 'react-native-view-shot';
-
-export default function App() {
-  const [facing, setFacing] = useState<CameraType>('back');
+export default function CameraScreen() {
+  const [facing] = useState<CameraType>('front');
   const [permission, requestPermission] = useCameraPermissions();
+  const cameraRef = useRef<Camera | null>(null);
+  const navigation = useNavigation();
 
   if (!permission) {
     // Camera permissions are still loading.
@@ -23,26 +24,25 @@ export default function App() {
     );
   }
 
-  function toggleCameraFacing() {
-    setFacing(current => (current === 'back' ? 'front' : 'back'));
+  async function takePicture() {
+    if (cameraRef.current) {
+      const photo = await cameraRef.current.takePictureAsync();
+      navigation.navigate('PhotoPreview', { photoUri: photo.uri });
+    }
   }
-
-
-  
 
   return (
     <View style={styles.container}>
-      <CameraView style={styles.camera} facing={facing}>
+      <CameraView style={styles.camera} facing={facing} ref={cameraRef}>
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={toggleCameraFacing}>
-            <Text style={styles.text}>Flip Camera</Text>
+          <TouchableOpacity style={styles.button} onPress={takePicture}>
+            <Text style={styles.text}>Take Picture</Text>
           </TouchableOpacity>
         </View>
       </CameraView>
     </View>
   );
 }
-
 
 const styles = StyleSheet.create({
   container: {
