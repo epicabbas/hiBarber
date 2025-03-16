@@ -16,6 +16,49 @@ export default function PhotoPreviewScreen({  }) {
       name: 'photo.jpg',
     });
 
+    async function getPhoto() {
+      // Define the orderId
+      const orderId = "7a5545f93132410dbb4348bc7b4e3d73";
+  
+      // Define the API endpoint
+      const apiUrl = "https://api.lightxeditor.com/external/api/v1/order-status";
+  
+      // Create the payload
+      const payload = {
+          orderId: orderId
+      };
+  
+      try {
+          // Make the POST request
+          const response = await fetch(apiUrl, {
+              method: "POST",
+              headers: {
+                  "Content-Type": "application/json"
+              },
+              body: JSON.stringify(payload)
+          });
+  
+          // Parse the response
+          const data = await response.json();
+  
+          // Handle the response (e.g., log or process it)
+          console.log("Response:", data);
+  
+          // Optionally, return the output URL if available
+          if (data.body && data.body.output) {
+              return data.body.output;
+          } else {
+              throw new Error("Output URL not found in response.");
+          }
+      } catch (error) {
+          console.error("Error:", error);
+      }
+  }
+  
+
+
+  
+
     try {
       const response = await fetch('http://172.31.61.167:3000/upload', {
         method: 'POST',
@@ -46,6 +89,8 @@ export default function PhotoPreviewScreen({  }) {
        <MaterialCommunityIcons name="check-circle" size={60} color="blue" onPress = {sendPhoto} />
       {/* <Button title="Send Photo" onPress={sendPhoto} /> */}
       <MaterialCommunityIcons name="camera-retake" size={60} color="blue" onPress = {()=> navigation.goBack()} />
+
+      <MaterialCommunityIcons name="arrow-top-right-thick" size={60} color="blue" onPress = {} />  
       {/* <Button title="✅" onPress={sendPhoto} /> */}
       </View>
     </View>
