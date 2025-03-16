@@ -15,7 +15,7 @@ export class AppService {
     return 'Hello World!';
   }
 
-  async processImage(file: Express.Multer.File): Promise<File[]> {
+  async processImage(file: Express.Multer.File): Promise<Express.Multer.File> {
     const { data } = await firstValueFrom(
       this.httpService.get<File[]>('http://localhost:3000/').pipe(
         catchError((error: AxiosError) => {
@@ -27,6 +27,6 @@ export class AppService {
     );
     console.log('result data', data);
     console.log('result file', file);
-    return data;
+    return file;
   }
 }
