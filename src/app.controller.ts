@@ -1,26 +1,26 @@
 import {
   Controller,
-  Get,
   Post,
   UploadedFile,
   UseInterceptors,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
-import { AppService } from './app.service';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { AppService } from './app.service';
 
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  @Get()
-  getHello(): string {
-    return this.appService.getHello();
-  }
-
   @Post('upload')
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(FileInterceptor('photo'))
   async uploadFile(@UploadedFile() file: Express.Multer.File) {
-    const result = await this.appService.processImage(file);
-    return result;
+    if (!file) {
+      throw new Error('No file uploaded');
+    }
+    console.log(file); // Debug uploaded file
+    const result = this.appService.processImage(file);
+    return { processedImageUrl: result };
   }
 }

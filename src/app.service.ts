@@ -1,32 +1,44 @@
 import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
-import { catchError, firstValueFrom } from 'rxjs';
-import { AxiosError } from 'axios';
+import { firstValueFrom } from 'rxjs';
+import { createReadStream } from 'fs';
+import * as FormData from 'form-data';
 
-export class File {
-  name: string;
-}
+
+import { unlink } from 'fs/promises';
 
 @Injectable()
 export class AppService {
   constructor(private readonly httpService: HttpService) {}
 
-  getHello(): string {
-    return 'Hello World!';
-  }
+  async processImage(file: Express.Multer.File): Promise<string> {
+    try {
+      console.log('file1:', file);
+      const data = {
+        "imageUrl": file.path,
+        "textPromt": "Change the hairstyle to a short bob",
+      }
 
-  async processImage(file: Express.Multer.File): Promise<Express.Multer.File> {
-    const { data } = await firstValueFrom(
-      this.httpService.get<File[]>('http://localhost:3000/').pipe(
-        catchError((error: AxiosError) => {
-          if (error && error.response) console.error(error.response.data);
-          // eslint-disable-next-line @typescript-eslint/only-throw-error
-          throw 'An error happened!';
-        }),
-      ),
-    );
-    console.log('result data', data);
-    console.log('result file', file);
-    return file;
+      // Call LightX API
+      console.log('Response0:');
+      const response = await firstValueFrom(
+        this.httpService.post('https://api.lightxeditor.com/external/api/v1/hairstyle', data, {
+          headers: {
+            'X-API-KEY': process.env.LIGHTX_API_KEY,
+            'Content-Type': 'multipart/form-data'
+          }
+        })
+      );
+      console.log('Response1:', response);
+
+      // Clean up temporary file
+      await unlink(file.path);
+
+      // Return processed image URL
+      return response.data.processed_url;
+    } catch (error) {
+      console.error('Error processing image:', error);
+      throw new Error('Failed to process image');
+    }
   }
 }

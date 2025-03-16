@@ -4,19 +4,33 @@ import { AppService } from './app.service';
 
 describe('AppController', () => {
   let appController: AppController;
+  let appService: AppService;
 
   beforeEach(async () => {
-    const app: TestingModule = await Test.createTestingModule({
+    const module: TestingModule = await Test.createTestingModule({
       controllers: [AppController],
-      providers: [AppService],
+      providers: [
+        {
+          provide: AppService,
+          useValue: {
+            processImage: jest.fn().mockResolvedValue('processed-image-url')
+          }
+        }
+      ],
     }).compile();
 
-    appController = app.get<AppController>(AppController);
+    appController = module.get<AppController>(AppController);
+    appService = module.get<AppService>(AppService);
   });
 
-  describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(appController.getHello()).toBe('Hello World!');
+  describe('uploadFile', () => {
+    it('should return processed image URL', async () => {
+      const mockFile = { path: 'test.jpg' } as Express.Multer.File;
+      const result = await appController.uploadFile(mockFile);
+      expect(result).toEqual({
+        status: 'success',
+        processedImageUrl: 'processed-image-url'
+      });
     });
   });
 });
