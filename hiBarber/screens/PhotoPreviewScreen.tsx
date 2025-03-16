@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Image, Button, StyleSheet } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 export default function PhotoPreviewScreen({  }) {
   const navigation = useNavigation();
@@ -39,8 +40,12 @@ export default function PhotoPreviewScreen({  }) {
   return (
     <View style={styles.container}>
        <Image source={{ uri: photoUri }} style={styles.image} />
-      <Button title="Send Photo" onPress={sendPhoto} />
-      <Button title="Retake Photo" onPress={() => navigation.goBack()} />
+       <View style={{flexDirection: 'row', justifyContent: 'space-between', width: '40%'}}>
+       <MaterialCommunityIcons name="check-circle" size={60} color="blue" onPress = {sendPhoto} />
+      {/* <Button title="Send Photo" onPress={sendPhoto} /> */}
+      <MaterialCommunityIcons name="camera-retake" size={60} color="blue" onPress = {()=> navigation.goBack()} />
+      {/* <Button title="✅" onPress={sendPhoto} /> */}
+      </View>
     </View>
   );
 }
