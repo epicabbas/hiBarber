@@ -3,8 +3,6 @@ import {
   Post,
   UploadedFile,
   UseInterceptors,
-  HttpException,
-  HttpStatus,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AppService } from './app.service';
@@ -19,8 +17,9 @@ export class AppController {
     if (!file) {
       throw new Error('No file uploaded');
     }
-    console.log(file); // Debug uploaded file
-    const result = this.appService.processImage(file);
-    return { processedImageUrl: result };
+    // console.log(file); // Debug uploaded file
+    const result = await this.appService.processImage(file);
+    console.log('orderId:', result);
+    return { orderId: result };
   }
 }
