@@ -1,16 +1,17 @@
 import React from 'react';
-import { View, Image, StyleSheet, TouchableOpacity } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import {View, Image, StyleSheet, TouchableOpacity} from 'react-native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 interface RouteParams {
   photoUri: string;
 }
 
-export default function PhotoPreviewScreen({  }: {}) {
+export default function PhotoPreviewScreen({}: {}) {
   const navigation = useNavigation();
   const route = useRoute<any>();
   const { photoUri } = route.params as RouteParams;
+  const [photo, setPhoto] = React.useState<string | null>(photoUri);
 
   const getPhoto = async () => {
     // Define the orderId
@@ -21,33 +22,35 @@ export default function PhotoPreviewScreen({  }: {}) {
 
     // Create the payload
     const payload = {
-        orderId: orderId
+      orderId: orderId
     };
 
     try {
-        // Make the POST request
-        const response = await fetch(apiUrl, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(payload)
-        });
+      // Make the POST request
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-API-KEY": "b5f636ffe8514963acf32178fc8fac89_99b111a6dd774cf496c24eb03819299a_andoraitools"
+        },
+        body: JSON.stringify(payload)
+      });
 
-        // Parse the response
-        const data = await response.json();
+      // Parse the response
+      const data = await response.json();
 
-        // Handle the response (e.g., log or process it)
-        console.log("Response:", data);
+      // Handle the response (e.g., log or process it)
+      console.log("Response:", data);
 
-        // Optionally, return the output URL if available
-        if (data.body && data.body.output) {
-            return data.body.output;
-        } else {
-            throw new Error("Output URL not found in response.");
-        }
+      // Optionally, return the output URL if available
+      if (data.body && data.body.output) {
+        console.log(data.body.output);
+        setPhoto(data.body.output);
+      } else {
+        throw new Error("Output URL not found in response.");
+      }
     } catch (error) {
-        console.error("Error:", error);
+      console.error("Error:", error);
     }
   };
 
@@ -72,7 +75,7 @@ export default function PhotoPreviewScreen({  }: {}) {
         const data = await response.json();
         console.log('Photo processed successfully', data);
         // Navigate to a new screen to display the processed image
-        navigation.navigate('ProcessedPhotoScreen', { processedImageUrl: data.processedImageUrl });
+        navigation.navigate('ProcessedPhotoScreen', {processedImageUrl: data.processedImageUrl});
       } else {
         console.error('Failed to process photo');
       }
@@ -84,16 +87,16 @@ export default function PhotoPreviewScreen({  }: {}) {
 
   return (
     <View style={styles.container}>
-       <Image source={{ uri: photoUri }} style={styles.image} />
-       <View style={{flexDirection: 'row', justifyContent: 'space-between', width: '40%'}}>
-       <MaterialCommunityIcons name="check-circle" size={60} color="blue" onPress = {sendPhoto} />
-      {/* <Button title="Send Photo" onPress={sendPhoto} /> */}
-      <MaterialCommunityIcons name="camera-retake" size={60} color="blue" onPress = {()=> navigation.goBack()} />
+      <Image source={{uri: photo}} style={styles.image}/>
+      <View style={{flexDirection: 'row', justifyContent: 'space-between', width: '40%'}}>
+        <MaterialCommunityIcons name="check-circle" size={60} color="blue" onPress={sendPhoto}/>
+        {/* <Button title="Send Photo" onPress={sendPhoto} /> */}
+        <MaterialCommunityIcons name="camera-retake" size={60} color="blue" onPress={() => navigation.goBack()}/>
 
-      <TouchableOpacity onPress={getPhoto}>
-        <MaterialCommunityIcons name="arrow-top-right-thick" size={60} color="blue" />
-      </TouchableOpacity>
-      {/* <Button title="✅" onPress={sendPhoto} /> */}
+        <TouchableOpacity onPress={getPhoto}>
+          <MaterialCommunityIcons name="arrow-top-right-thick" size={60} color="blue"/>
+        </TouchableOpacity>
+        {/* <Button title="✅" onPress={sendPhoto} /> */}
       </View>
     </View>
   );
