@@ -17,7 +17,7 @@ export default function PhotoPreviewScreen({  }) {
     });
 
     try {
-      const response = await fetch('https://your-backend-url.com/upload', {
+      const response = await fetch('http://172.31.61.167:3000/upload', {
         method: 'POST',
         body: formData,
         headers: {
@@ -25,15 +25,17 @@ export default function PhotoPreviewScreen({  }) {
         },
       });
 
-      if (response.ok) {
-        console.log('Photo uploaded successfully');
+    if (response.ok) {
+        const data = await response.json();
+        console.log('Photo processed successfully', data);
+        // Navigate to a new screen to display the processed image
+        navigation.navigate('ProcessedPhotoScreen', { processedImageUrl: data.processedImageUrl });
       } else {
-        console.error('Failed to upload photo');
+        console.error('Failed to process photo');
       }
     } catch (error) {
-      console.error('Error uploading photo:', error);
+      console.error('Error processing photo:', error);
     }
-
     navigation.goBack();
   };
 
